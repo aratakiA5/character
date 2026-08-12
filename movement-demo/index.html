@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Movement Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <h1>キャラクター操作デモ</h1>
+    <p>← → または A / D で移動、Space / W / ↑ でジャンプ</p>
+
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <div class="status">
+      <span id="position">X: 0 / Y: 0</span>
+      <button id="reset" type="button">リセット</button>
+    </div>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

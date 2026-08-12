@@ -9,8 +9,28 @@
 <body>
   <main class="wrap">
     <h1>キャラクターチップ歩行デモ</h1>
-    <p>マップをクリックすると旗が立ち、キャラクターがそこまで歩きます。矢印キー / WASD でも移動できます。</p>
+    <p>マップをクリックすると旗が立ち、キャラクターがそこまで歩きます。岩と川は通れず、橋は渡れます。</p>
     <div id="stage" class="stage">
+      <div class="river" aria-hidden="true"></div>
+      <div class="water water-left" aria-hidden="true"></div>
+      <div class="bridge" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="grass grass-1" aria-hidden="true"></div>
+      <div class="grass grass-2" aria-hidden="true"></div>
+      <div class="grass grass-3" aria-hidden="true"></div>
+      <div class="grass grass-4" aria-hidden="true"></div>
+      <div class="grass grass-5" aria-hidden="true"></div>
+
+      <div class="stone stone-1" aria-hidden="true"></div>
+      <div class="stone stone-2" aria-hidden="true"></div>
+      <div class="stone stone-3" aria-hidden="true"></div>
+
+      <div class="rock rock-1 obstacle" aria-hidden="true"></div>
+      <div class="rock rock-2 obstacle" aria-hidden="true"></div>
+      <div class="rock rock-3 obstacle" aria-hidden="true"></div>
+
       <div id="flag" class="flag" aria-label="destination"><span></span></div>
       <div id="player" class="player" aria-label="player"></div>
     </div>

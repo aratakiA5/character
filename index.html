@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Creator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="panel creator-panel">
+      <p class="eyebrow">CHARACTER CREATOR</p>
+      <h1>キャラクタークリエイト</h1>
+      <p class="lead">冒険者のプロフィールを組み立てて保存できます。</p>
+
+      <form id="character-form">
+        <div class="form-grid">
+          <label>
+            名前
+            <input id="name" type="text" placeholder="例：リュカ" maxlength="30" required />
+          </label>
+
+          <label>
+            種族
+            <select id="race">
+              <option>人間</option>
+              <option>エルフ</option>
+              <option>ドワーフ</option>
+              <option>獣人</option>
+              <option>竜人</option>
+              <option>魔族</option>
+            </select>
+          </label>
+
+          <label>
+            職業
+            <select id="job">
+              <option>戦士</option>
+              <option>騎士</option>
+              <option>魔術師</option>
+              <option>僧侶</option>
+              <option>盗賊</option>
+              <option>狩人</option>
+              <option>錬金術師</option>
+            </select>
+          </label>
+
+          <label>
+            性格
+            <select id="personality">
+              <option>勇敢</option>
+              <option>冷静</option>
+              <option>陽気</option>
+              <option>慎重</option>
+              <option>好奇心旺盛</option>
+              <option>無口</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>能力値</legend>
+          <div class="stats" id="stats"></div>
+          <p id="point-status" class="point-status"></p>
+        </fieldset>
+
+        <label>
+          外見・設定メモ
+          <textarea id="appearance" rows="5" placeholder="髪色、服装、武器、出自、口調など"></textarea>
+        </label>
+
+        <div class="actions">
+          <button type="button" class="secondary" id="randomize">ランダム作成</button>
+          <button type="submit">保存する</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel preview-panel">
+      <div class="preview-heading">
+        <div>
+          <p class="eyebrow">PREVIEW</p>
+          <h2>キャラクター</h2>
+        </div>
+        <button type="button" class="ghost" id="clear-all">保存データ削除</button>
+      </div>
+
+      <article class="character-card" id="preview-card"></article>
+
+      <h3>保存したキャラクター</h3>
+      <div id="saved-list" class="saved-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

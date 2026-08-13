@@ -12,8 +12,8 @@ const PLAYER_RADIUS = 13;
 const directionRow = { down: 0, left: 1, right: 2, up: 3 };
 const keys = new Set();
 const state = {
-  x: 416,
-  y: 248,
+  x: 260,
+  y: 430,
   direction: 'down',
   frame: 1,
   frameTimer: 0,

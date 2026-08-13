@@ -6,23 +6,22 @@ const enemyEl = document.getElementById('enemy');
 const damagePop = document.getElementById('damage-pop');
 const battlefield = document.querySelector('.battlefield');
 
-const FRAME_W = 72;
-const FRAME_H = 96;
+const DEFAULT_FRAME_W = 72;
+const DEFAULT_FRAME_H = 96;
 const STATE_ROW = { idle: 0, attack: 1, hit: 2, victory: 3 };
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const party = [
-  { name: 'アルト', job: '剣士', hp: 120, maxHp: 120, mp: 28, maxMp: 28, charRow: 0, power: 23, magic: 12, commands: ['attack', 'defend'] },
-  { name: 'レナ', job: '女戦士', hp: 145, maxHp: 145, mp: 10, maxMp: 10, charRow: 1, power: 29, magic: 5, commands: ['attack', 'power', 'defend'] },
-  { name: 'ミリア', job: '女魔法使い', hp: 84, maxHp: 84, mp: 52, maxMp: 52, charRow: 2, power: 10, magic: 31, commands: ['attack', 'fire', 'defend'] },
-  { name: 'セラ', job: '女僧侶', hp: 98, maxHp: 98, mp: 46, maxMp: 46, charRow: 3, power: 12, magic: 27, commands: ['attack', 'heal', 'defend'] },
+  { name: 'アルト', job: '剣士', hp: 120, maxHp: 120, mp: 28, maxMp: 28, charRow: 0, power: 23, magic: 12, commands: ['attack', 'defend'], frameCount: 4 },
+  { name: 'レナ', job: '女戦士', hp: 145, maxHp: 145, mp: 10, maxMp: 10, charRow: 1, power: 29, magic: 5, commands: ['attack', 'power', 'defend'], spriteType: 'warrior', frameW: 48, frameH: 48, frameCount: 3 },
+  { name: 'ミリア', job: '女魔法使い', hp: 84, maxHp: 84, mp: 52, maxMp: 52, charRow: 2, power: 10, magic: 31, commands: ['attack', 'fire', 'defend'], frameCount: 4 },
+  { name: 'セラ', job: '女僧侶', hp: 98, maxHp: 98, mp: 46, maxMp: 46, charRow: 3, power: 12, magic: 27, commands: ['attack', 'heal', 'defend'], frameCount: 4 },
 ];
 
 const enemy = { name: '森の魔獣', hp: 330, maxHp: 330, power: 22 };
 let currentIndex = 0;
 let busy = false;
 let battleEnded = false;
-let animationTimer = 0;
 
 function livingParty() {
   return party.filter((member) => member.hp > 0);
@@ -32,7 +31,7 @@ function createParty() {
   partyEl.innerHTML = '';
   party.forEach((member, index) => {
     const el = document.createElement('div');
-    el.className = `party-member member-${index}`;
+    el.className = `party-member member-${index}${member.spriteType === 'warrior' ? ' warrior-sprite' : ''}`;
     el.dataset.index = index;
     member.el = el;
     partyEl.appendChild(el);
@@ -40,8 +39,18 @@ function createParty() {
 }
 
 function setSprite(member, state = 'idle', frame = 0) {
+  if (member.spriteType === 'warrior') {
+    const frameW = member.frameW;
+    const frameH = member.frameH;
+    const safeFrame = frame % member.frameCount;
+    const row = STATE_ROW[state];
+    member.el.style.backgroundPosition = `${-(safeFrame * frameW)}px ${-(row * frameH)}px`;
+    return;
+  }
+
+  const safeFrame = frame % member.frameCount;
   const row = member.charRow * 4 + STATE_ROW[state];
-  member.el.style.backgroundPosition = `${-(frame * FRAME_W)}px ${-(row * FRAME_H)}px`;
+  member.el.style.backgroundPosition = `${-(safeFrame * DEFAULT_FRAME_W)}px ${-(row * DEFAULT_FRAME_H)}px`;
 }
 
 function renderStatus() {
@@ -102,9 +111,10 @@ async function popDamage(target, amount, heal = false) {
 
 async function animateMember(member, state, duration = 420) {
   member.el.classList.add(state === 'attack' ? 'attack' : state === 'hit' ? 'hit' : state);
-  for (let frame = 0; frame < 4; frame++) {
+  const count = member.frameCount || 4;
+  for (let frame = 0; frame < count; frame++) {
     setSprite(member, state, frame);
-    await sleep(duration / 4);
+    await sleep(duration / count);
   }
   member.el.classList.remove('attack', 'hit');
   if (member.hp > 0) setSprite(member, 'idle', 0);
@@ -168,7 +178,6 @@ async function enemyTurn() {
   const damage = roll(enemy.power - 6, enemy.power + 4);
   target.hp -= damage;
   messageEl.textContent = `${enemy.name}の攻撃！ ${target.name}は${damage}のダメージ！`;
-  target.el.classList.add('hit');
   await animateMember(target, 'hit', 360);
   await popDamage(target.el, damage);
   if (target.hp <= 0) {
@@ -190,7 +199,7 @@ async function checkBattleEnd() {
     renderStatus();
     for (const member of livingParty()) {
       member.el.classList.add('victory');
-      setSprite(member, 'victory', 1);
+      setSprite(member, 'victory', Math.min(1, (member.frameCount || 4) - 1));
     }
     return true;
   }
@@ -252,9 +261,10 @@ async function executeCommand(command) {
 
 function idleLoop(now) {
   if (!battleEnded) {
-    const frame = Math.floor(now / 260) % 4;
     party.forEach((member) => {
       if (member.hp > 0 && !member.el.classList.contains('attack') && !member.el.classList.contains('hit')) {
+        const count = member.frameCount || 4;
+        const frame = Math.floor(now / 260) % count;
         setSprite(member, 'idle', frame);
       }
     });

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Party Side View Battle</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="battle-shell">
+    <section class="battlefield">
+      <div class="enemy-group">
+        <div id="enemy" class="enemy slime"></div>
+      </div>
+      <div id="party" class="party"></div>
+      <div id="damage-pop" class="damage-pop"></div>
+    </section>
+
+    <section class="battle-ui">
+      <div id="message" class="message-box">モンスターが現れた！</div>
+      <div class="lower-ui">
+        <div id="commands" class="command-box"></div>
+        <div id="status" class="status-box"></div>
+      </div>
+    </section>
+  </main>
+  <script src="battle.js"></script>
+</body>
+</html>

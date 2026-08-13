@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battle Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="battle-shell">
+    <section class="battlefield" aria-label="battle field">
+      <div class="enemy-side">
+        <div id="enemy" class="enemy slime" aria-label="enemy"></div>
+      </div>
+      <div class="party-side">
+        <div id="hero" class="hero" aria-label="hero"><span class="sword"></span></div>
+      </div>
+      <div id="damage-pop" class="damage-pop"></div>
+    </section>
+
+    <section class="battle-ui">
+      <div class="message-box" id="message">モンスターが現れた！</div>
+      <div class="lower-ui">
+        <div class="command-box" id="commands">
+          <button data-command="attack">こうげき</button>
+          <button data-command="magic">まほう</button>
+          <button data-command="defend">ぼうぎょ</button>
+          <button data-command="run">にげる</button>
+        </div>
+        <div class="status-box">
+          <div class="status-row"><strong>アルト</strong><span>HP <b id="hero-hp">120</b>/120</span><span>MP <b id="hero-mp">30</b>/30</span></div>
+          <div class="status-row enemy-status"><strong id="enemy-name">グリーンスライム</strong><span>HP <b id="enemy-hp">85</b>/85</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="battle.js"></script>
+</body>
+</html>

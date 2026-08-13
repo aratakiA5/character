@@ -8,6 +8,8 @@ const SPEED = 150;
 const FRAME_TIME = 0.14;
 const ARRIVAL_DISTANCE = 3;
 const PLAYER_RADIUS = 13;
+const ENCOUNTER_CHECK_DISTANCE = 85;
+const ENCOUNTER_CHANCE = 0.18;
 
 const directionRow = { down: 0, left: 1, right: 2, up: 3 };
 const keys = new Set();
@@ -18,6 +20,8 @@ const state = {
   frame: 1,
   frameTimer: 0,
   target: null,
+  encounterDistance: 0,
+  encounterLocked: false,
 };
 
 const rockRects = [
@@ -36,11 +40,7 @@ function pointInExpandedRect(x, y, rect, padding = PLAYER_RADIUS) {
 
 function isBlocked(x, y) {
   if (pointInExpandedRect(x, y, pondRect, 6)) return true;
-
-  if (pointInExpandedRect(x, y, riverRect, 0) && !pointInExpandedRect(x, y, bridgeRect, -4)) {
-    return true;
-  }
-
+  if (pointInExpandedRect(x, y, riverRect, 0) && !pointInExpandedRect(x, y, bridgeRect, -4)) return true;
   return rockRects.some((rect) => pointInExpandedRect(x, y, rect));
 }
 
@@ -50,7 +50,6 @@ function setTarget(x, y) {
     flag.style.display = 'none';
     return;
   }
-
   state.target = { x, y };
   flag.style.display = 'block';
   flag.style.left = `${x}px`;
@@ -110,44 +109,58 @@ function getMoveVector(dt) {
     flag.style.display = 'none';
     return { x: 0, y: 0 };
   }
-
   return { x: dx / distance, y: dy / distance };
 }
 
 function updateDirection(move) {
-  if (Math.abs(move.x) > Math.abs(move.y)) {
-    state.direction = move.x < 0 ? 'left' : 'right';
-  } else if (move.y !== 0) {
-    state.direction = move.y < 0 ? 'up' : 'down';
-  }
+  if (Math.abs(move.x) > Math.abs(move.y)) state.direction = move.x < 0 ? 'left' : 'right';
+  else if (move.y !== 0) state.direction = move.y < 0 ? 'up' : 'down';
 }
 
 function tryMove(dx, dy) {
   const half = FRAME_SIZE / 2;
+  const beforeX = state.x;
+  const beforeY = state.y;
   const nextX = Math.max(half, Math.min(stage.clientWidth - half, state.x + dx));
   const nextY = Math.max(half, Math.min(stage.clientHeight - half, state.y + dy));
 
-  let moved = false;
-  if (!isBlocked(nextX, state.y)) {
-    state.x = nextX;
-    moved = true;
+  if (!isBlocked(nextX, state.y)) state.x = nextX;
+  if (!isBlocked(state.x, nextY)) state.y = nextY;
+
+  return Math.hypot(state.x - beforeX, state.y - beforeY);
+}
+
+function checkEncounter(distanceMoved) {
+  if (state.encounterLocked || distanceMoved <= 0) return;
+  state.encounterDistance += distanceMoved;
+
+  while (state.encounterDistance >= ENCOUNTER_CHECK_DISTANCE) {
+    state.encounterDistance -= ENCOUNTER_CHECK_DISTANCE;
+    if (Math.random() < ENCOUNTER_CHANCE) {
+      state.encounterLocked = true;
+      state.target = null;
+      keys.clear();
+      flag.style.display = 'none';
+      document.body.classList.add('encounter-flash');
+      setTimeout(() => {
+        location.href = '../battle-demo/index.html';
+      }, 320);
+      break;
+    }
   }
-  if (!isBlocked(state.x, nextY)) {
-    state.y = nextY;
-    moved = true;
-  }
-  return moved;
 }
 
 function update(dt) {
+  if (state.encounterLocked) return;
   const move = getMoveVector(dt);
   let moving = move.x !== 0 || move.y !== 0;
 
   if (moving) {
     updateDirection(move);
-    const moved = tryMove(move.x * SPEED * dt, move.y * SPEED * dt);
+    const distanceMoved = tryMove(move.x * SPEED * dt, move.y * SPEED * dt);
+    checkEncounter(distanceMoved);
 
-    if (!moved && state.target) {
+    if (distanceMoved === 0 && state.target) {
       state.target = null;
       flag.style.display = 'none';
       moving = false;
